@@ -57,18 +57,19 @@ export class CustomMapperFetcher implements FetcherRenderer {
       ? `${typedFetcher}(${documentVariableName}).bind(null, variables)`
       : `${typedFetcher}(${documentVariableName}, variables)`;
 
-    return `export const use${operationName} = <
+    return `export function use${operationName}<
       TData = ${operationResultType},
       TError = ${this.visitor.config.errorType}
     >(
-      ${variables}, 
+      ${variables},
       ${options}
-    ) => 
-    ${hookConfig.query.hook}<${operationResultType}, TError, TData>(
-      ['${node.name.value}', variables],
-      ${impl},
-      options
-    );`;
+    ) {
+      return ${hookConfig.query.hook}<${operationResultType}, TError, TData>(
+        ['${node.name.value}', variables],
+        ${impl},
+        options
+      );
+    }`;
   }
 
   generateMutationHook(
@@ -89,13 +90,18 @@ export class CustomMapperFetcher implements FetcherRenderer {
       ? `${typedFetcher}(${documentVariableName})`
       : `(${variables}) => ${typedFetcher}(${documentVariableName}, variables)()`;
 
-    return `export const use${operationName} = <
+    return `export function use${operationName}<
       TError = ${this.visitor.config.errorType},
       TContext = unknown
-    >(${options}) => 
-    ${hookConfig.mutation.hook}<${operationResultType}, TError, ${operationVariablesTypes}, TContext>(
-      ${impl},
-      options
-    );`;
+    >(${options}) {
+      const data = {
+        typedFetcher: ${typedFetcher},
+        documentVariableName: ${documentVariableName},
+      }
+      return ${hookConfig.mutation.hook}<${operationResultType}, TError, ${operationVariablesTypes}, TContext>(
+        ${impl},
+        options
+      );
+    }`;
   }
 }
