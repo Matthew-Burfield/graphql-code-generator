@@ -1,8 +1,9 @@
 {
   "name": "graphql-code-generator",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
-    "preinstall": "npx yarn-deduplicate",
+    "preinstall": "npx yarn-deduplicate --ignore-workspace-root-check",
     "postinstall": "patch-package && husky install",
     "clean": "rimraf node_modules packages/{*,plugins/*/*,presets/*,utils/*}/node_modules",
     "prebuild": "rimraf packages/{*,plugins/*/*,presets/*,utils/*}/dist",
